@@ -53,11 +53,33 @@
                             './sound/72a888piCJRm.mp3',
                             './sound/135888piCtM9.mp3'
                         ];
+        // function soundPlay () {
+        //     // var voice = './sound/14t888piCqei.mp3'; // 固定声音
+        //     var voice = voiceAry[Math.floor(Math.random () * voiceAry.length)]; // 随机声音
+        //     var voice = new Audio(voice);
+        //     voice.play(); //播放
+        // }
+
         function soundPlay () {
-            // var voice = './sound/14t888piCqei.mp3'; // 固定声音
-            var voice = voiceAry[Math.floor(Math.random () * voiceAry.length)]; // 随机声音
-            var voice = new Audio(voice);
-            voice.play(); //播放
+            // 返回一个promise以告诉调用者检测结果
+            return new Promise(resolve => {
+                let audio = document.createElement('audio');
+                // audio.src = '../dist/sound/14t888piCqei.mp3';
+                audio.src = voiceAry[Math.floor(Math.random () * voiceAry.length)]; // 随机声音
+                document.body.appendChild(audio);
+                let autoplay = true;
+                // play返回的是一个promise
+                audio.play().then(() => {
+                    // 支持自动播放
+                    autoplay = true;
+                }).catch(err => {
+                    // 不支持自动播放
+                    autoplay = false;
+                }).finally(() => {
+                    // 告诉调用者结果
+                    resolve(autoplay);
+                });
+            });
         }
 
         var ws = new WebSocket('ws://localhost:8181');
