@@ -1,0 +1,98 @@
+﻿<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>WebSocket Echo Demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="../bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="../js/jquery-1.12.3.min.js"></script>
+    <script src="../bootstrap-3.3.5/js/bootstrap.min.js"></script>
+    <link href="./animate.css" rel="stylesheet">
+    <style type="text/css">
+        #notice-content{
+            display: none;
+            width: 30%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+        }
+        #notice-content ul{
+            list-style: none;
+            padding: 12px;
+            padding: 8px 12px;
+        }
+
+        #notice-content ul li{
+            white-space: normal;
+            word-break: break-all;
+            margin: 6px 0;
+            border-bottom: 1px dashed #ccc;
+            padding-bottom: 6px;
+        }
+
+        #notice-content ul li:last-child{
+            border-bottom: none;
+            padding-bottom: 6px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="vertical-center">
+    <div class="container">
+        <div id="notice-content">
+            <ul></ul>
+        </div>
+    </div>
+</div>
+    <script>
+
+        var voiceAry = [
+                            './sound/14t888piCqei.mp3',
+                            './sound/04d888piCkzW.mp3',
+                            './sound/31C888piC8FK.mp3',
+                            './sound/62w888piCkSd.mp3',
+                            './sound/72a888piCJRm.mp3',
+                            './sound/135888piCtM9.mp3'
+                        ];
+        function soundPlay () {
+            // var voice = './sound/14t888piCqei.mp3'; // 固定声音
+            var voice = voiceAry[Math.floor(Math.random () * voiceAry.length)]; // 随机声音
+            var voice = new Audio(voice);
+            voice.play(); //播放
+        }
+
+        var ws = new WebSocket('ws://localhost:8181');
+        function noticeAccept() {
+            var tarUl = $('#notice-content > ul');
+            ws.onopen = function (e) {
+                console.log('Connection to server opened');
+            }
+            // WebSocket message handler
+            ws.onmessage = function (e) {
+                if (e.target.readyState === 1) {
+                    tarUl.append('<li>'+e.data+'</li>');
+                    if (tarUl.children().length > 5) {
+                        $('#notice-content > ul li:eq(0)').remove();
+                    }
+
+                    // 效果
+                    $('#notice-content').show();
+                    $('#notice-content').addClass('animated shake');
+                    soundPlay();
+                    setTimeout(function () {
+                        $('#notice-content').removeClass('animated shake');
+                    }, 1200);
+                } else {
+                    tarUl.html('<li class="text-center">暂无消息</li>');
+                }
+            };
+
+            ws.onerror = function(event){
+                tarUl.html('<li class="text-center">暂无消息</li>')
+            }  
+        }
+
+        noticeAccept();
+
+    </script>
+</body>
+</html>
